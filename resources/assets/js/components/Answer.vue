@@ -28,9 +28,11 @@ export default {
             .then(res=>{
                 this.editing= false;
                 this.bodyHtml = res.data.body_html;
+                // this.$toast.success(res.data.message,"Success",{timeout:3000});
+                swal('Updated !!',res.data.message, "success")
             })
             .catch(error=>{
-                console.log(error.response.data.message);
+                this.$toast.error(res.response.data.message,"Error",{timeout:3000})
             });
         },
 
@@ -56,11 +58,10 @@ export default {
                 if(willdelete){
                     axios.delete(this.endpoint)
                     .then(res=>{
-                        // $(this.$el).fadeOut(500,()=>{
-                        //     alert(res.data.message);
-                        // })
-                        swal("Good job!", res.data.message, "success");
-                        this.$router.go()
+                        $(this.$el).fadeOut(500,()=>{
+                            swal("Good job!", res.data.message, "success");
+                        })
+                        
                     })
                     .catch(err=>{})
                 }
