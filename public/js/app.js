@@ -50054,20 +50054,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             isFavorite: this.question.is_favorited,
             question_id: this.question.id,
-            count: this.question.favorites_count,
-            signedIn: true
+            count: this.question.favorites_count
         };
     },
 
     computed: {
         classes: function classes() {
             return ['favorite', 'mt-2', !this.signedIn ? 'off' : this.isFavorite ? 'favorited' : ''];
+        },
+        signedIn: function signedIn() {
+            return window.Auth.signIn;
         }
     },
     methods: {
         toggle: function toggle() {
             var _this = this;
 
+            if (!this.signedIn) {
+                swal({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'Please Sign in first'
+
+                });
+                return;
+            }
             if (!this.isFavorite) {
                 axios.post('/questions/' + this.question_id + '/favorites').then(function (res) {
                     _this.count++;

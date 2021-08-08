@@ -15,7 +15,6 @@ export default {
             isFavorite: this.question.is_favorited,
             question_id:this.question.id,
             count: this.question.favorites_count,
-            signedIn : true,
         }
     },
     computed: {
@@ -26,11 +25,23 @@ export default {
                 ! this.signedIn ? 'off' : ( this.isFavorite ? 'favorited' : ''),
             ]
         },
+        signedIn(){
+            return window.Auth.signIn
+        }
 
     },
     methods:{
         toggle(){
-            if(! this.isFavorite){
+            if(! this.signedIn){
+                swal({
+                    icon:'warning',
+                    title:'warning',
+                    text:'Please Sign in first'
+                    
+                })
+                return ;
+            }
+                 if(! this.isFavorite){
                 axios.post(`/questions/${this.question_id}/favorites`)
                 .then(res=>{
                     this.count++;
@@ -50,6 +61,8 @@ export default {
 
                 })
             }
+            
+           
         },
     }
 }
