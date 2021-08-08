@@ -4,11 +4,13 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+ import swal from 'sweetalert';
 
 require('./bootstrap');
 require('./fontawesome');
 
 window.Vue = require('vue');
+window.Swal = swal;
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
