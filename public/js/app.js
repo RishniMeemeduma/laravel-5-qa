@@ -14061,6 +14061,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_izitoast___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vue_izitoast__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_izitoast_dist_css_iziToast_min_css__ = __webpack_require__(58);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_izitoast_dist_css_iziToast_min_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_izitoast_dist_css_iziToast_min_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -14078,7 +14080,8 @@ window.Swal = __WEBPACK_IMPORTED_MODULE_0_sweetalert___default.a;
 
 
 
-Vue.use(__WEBPACK_IMPORTED_MODULE_1_vue_izitoast___default.a);
+
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_izitoast___default.a);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -14086,10 +14089,11 @@ Vue.use(__WEBPACK_IMPORTED_MODULE_1_vue_izitoast___default.a);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('user-info', __webpack_require__(47));
-Vue.component('answer', __webpack_require__(50));
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component('user-info', __webpack_require__(47));
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component('answer', __webpack_require__(50));
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component('favourite', __webpack_require__(61));
 
-var app = new Vue({
+var app = new __WEBPACK_IMPORTED_MODULE_3_vue___default.a({
   el: '#app'
 });
 
@@ -49979,6 +49983,147 @@ exports.push([module.i, "/*\r\n* iziToast | v1.4.0\r\n* http://izitoast.marcelod
 
 // exports
 
+
+/***/ }),
+/* 60 */,
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(12)
+/* script */
+var __vue_script__ = __webpack_require__(62)
+/* template */
+var __vue_template__ = __webpack_require__(63)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\Favourite.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b462427c", Component.options)
+  } else {
+    hotAPI.reload("data-v-b462427c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['question'],
+    data: function data() {
+        return {
+            isFavorite: this.question.is_favorited,
+            question_id: this.question.id,
+            count: this.question.favorites_count,
+            signedIn: true
+        };
+    },
+
+    computed: {
+        classes: function classes() {
+            return ['favorite', 'mt-2', !this.signedIn ? 'off' : this.isFavorite ? 'favorited' : ''];
+        }
+    },
+    methods: {
+        toggle: function toggle() {
+            var _this = this;
+
+            if (!this.isFavorite) {
+                axios.post('/questions/' + this.question_id + '/favorites').then(function (res) {
+                    _this.count++;
+                    _this.isFavorite = true;
+                }).catch(function (err) {});
+            } else {
+
+                axios.delete('/questions/' + this.question_id + '/favorites').then(function (res) {
+                    _this.count--;
+                    _this.isFavorite = false;
+                }).catch(function (err) {});
+            }
+        }
+    }
+});
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "a",
+    {
+      class: _vm.classes,
+      attrs: {
+        title: "Click to mark as favorite question (Click again to undo)"
+      },
+      on: {
+        click: function($event) {
+          $event.preventDefault()
+          return _vm.toggle($event)
+        }
+      }
+    },
+    [
+      _c("i", { staticClass: "fas fa-star fa-2x" }),
+      _vm._v(" "),
+      _c("span", { staticClass: "favorites-count" }, [
+        _vm._v(_vm._s(_vm.count))
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-b462427c", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);
