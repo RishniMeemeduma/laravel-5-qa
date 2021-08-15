@@ -25,9 +25,7 @@ export default {
                 ! this.signedIn ? 'off' : ( this.isFavorite ? 'favorited' : ''),
             ]
         },
-        signedIn(){
-            return window.Auth.signIn
-        }
+
 
     },
     methods:{
