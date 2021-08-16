@@ -95,9 +95,10 @@ export default {
                 if(willdelete){
                     axios.delete(this.endpoint)
                     .then(res=>{
-                        $(this.$el).fadeOut(500,()=>{
-                            swal("Good job!", res.data.message, "success");
-                        })
+                        this.$emit('deleted');
+                        // $(this.$el).fadeOut(500,()=>{
+                        //     swal("Good job!", res.data.message, "success");
+                        // })
                         
                     })
                     .catch(err=>{})
