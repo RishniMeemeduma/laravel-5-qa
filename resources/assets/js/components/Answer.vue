@@ -36,8 +36,18 @@
 </template>
 
 <script>
+import UserInfo from './UserInfo.vue';
+import Vote from './Vote.vue';
+import modification from '../mixins/modifications';
+
+    
 export default {
     props:['answer'],
+    mixins:[modification],
+    components:{
+        UserInfo,
+        Vote
+    },
     data(){
         return {
             editing : false,
@@ -58,42 +68,22 @@ export default {
         }
     },
     methods:{
-        update() {
-            axios.patch(this.endpoint,{
+        payload(){
+            return {
                 body:this.body
-            })
-            .then(res=>{
-                this.editing= false;
-                this.bodyHtml = res.data.body_html;
-                // this.$toast.success(res.data.message,"Success",{timeout:3000});
-                swal('Updated !!',res.data.message, "success")
-            })
-            .catch(error=>{
-                this.$toast.error(res.response.data.message,"Error",{timeout:3000})
-            });
+            }
         },
 
-        edit(){
+        setEditCache(){
             this.beforeEditCache = this.body;
-            this.editing = true;
         },
 
-        cancel(){
+        restoreFromCache(){
             this.body = this.beforeEditCache;
-            this.editing = false;
         },
 
-        destroy(){
-            swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this imaginary file!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willdelete) =>{
-                if(willdelete){
-                    axios.delete(this.endpoint)
+        delete(){
+            axios.delete(this.endpoint)
                     .then(res=>{
                         this.$emit('deleted');
                         // $(this.$el).fadeOut(500,()=>{
@@ -102,8 +92,6 @@ export default {
                         
                     })
                     .catch(err=>{})
-                }
-            });
         }
 
     }

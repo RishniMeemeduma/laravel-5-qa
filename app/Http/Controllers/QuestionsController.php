@@ -87,7 +87,11 @@ class QuestionsController extends Controller
 
         $question->update($request->only('title', 'body'));
 
-        return redirect('/questions')->with('success', "Your question has been updated.");
+        // return redirect('/questions')->with('success', "Your question has been updated.");
+        return response()->json([
+            'message'=>"Your question has been updated.",
+            'body_html' => $question->body_html
+        ]);
     }
 
     /**
@@ -102,6 +106,9 @@ class QuestionsController extends Controller
 
         $question->delete();
 
-        return redirect('/questions')->with('success', "Your question has been deleted.");
+        // return redirect('/questions')->with('success', "Your question has been deleted.");
+        return response()->json([
+            'message'=>"Your question has been deleted.",
+        ]);
     }
 }
