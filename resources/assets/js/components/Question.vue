@@ -13,7 +13,9 @@
                         
                         <div class="media-body">
                             <div class="form-group">
-                                <textarea name="" class="form-control" id="" cols="30" rows="10" v-model="body" ></textarea>
+                                <m-editor :body="body">
+                                    <textarea name="" class="form-control" id="" cols="30" rows="10" v-model="body" ></textarea>
+                                </m-editor>
                             </div>
                             
                             <button class="btn  btn-primary" :disabled="inValid">Update</button>
@@ -61,13 +63,15 @@
 import UserInfo from './UserInfo.vue';
 import Vote from './Vote.vue';
 import modification from '../mixins/modifications';
+import MEditor from '../components/MEditor.vue';
 
 export default {
     props:['question'],
     mixins:[modification],
     components:{
         UserInfo,
-        Vote
+        Vote,
+        MEditor
     },
     data(){
         return{

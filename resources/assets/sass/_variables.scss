@@ -1,6 +1,7 @@
 
 // Body
-$body-bg: #f5f8fa;
+$color-white: #fff;
+$body-bg: $color-white;
 
 // Typography
 $font-family-sans-serif: "Raleway", sans-serif;
@@ -9,6 +10,6 @@ $line-height-base: 1.6;
 
 $color-green: rgb(95, 187, 126);
 
-$color-white: #fff;
+
 
 $button-color:#33aa7c;
