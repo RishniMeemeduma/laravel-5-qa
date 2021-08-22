@@ -19,21 +19,24 @@
                 </div>
             </div>
         </div>
-        <new-answer :question-id="question.id" v-on:created="created"></new-answer>
+        <new-answer :question-id="question.id" v-on:created="add"></new-answer>
     </div>
 </template>
 <script>
 import Answer from './Answer.vue';
 import NewAnswer from './NewAnswer.vue';
+import highlight from '../mixins/highlight';
 
 export default {
     props:['question'],
+    mixins:[highlight],
     data(){
         return {
             'question_id' :this.question.id,
             'count':this.question.answers_count,
             'answers':[],
-            'nextUrl':null
+            'nextUrl':null,
+            'answerIds':[]
         }
     },
     components:{
@@ -46,26 +49,38 @@ export default {
         }
     },
     created(){
-        this.fetch(`/questions/${this.question_id}/answers`)
+        this.fetch(`/questions/${this.question_id}/answers`);
+        
     },
     methods:{
         fetch(endpoint){
+            this.answerIds = [];
             axios.get(endpoint)
             .then(({data})=>{
+                this.answerIds = data.data.map(a => a.id);
                 this.answers.push(...data.data);
                 this.nextUrl = data.next_page_url;
             })
             .catch(err=>{
 
             })
+            .then(()=>{
+                this.answerIds.forEach(id=>{
+                    this.highlight(`answer-${id}`)
+                })
+            })
         },
         remove(index){
             this.answers.splice(index,1);
             this.count--;
         },
-        created(answer){
+        add(answer){
             this.answers.push(answer);
             this.count++;
+            this.$nextTick(()=>{
+                 this.highlight(`answer-${answer.id}`);
+            })
+           
         }
     }
 }

@@ -9,7 +9,9 @@
                     <hr>
                     <form @submit.prevent="create">
                         <div class="form-group">
-                            <textarea class="form-control" rows="7" name="body" required v-model="body"></textarea>
+                            <m-editor :body="body" :name="uniqueName">
+                                <textarea class="form-control" rows="7" name="body" required v-model="body"></textarea>
+                            </m-editor>
                         </div>
                         <div class="form-group">
                             <button type="submit" :disabled="isInvalid" class="btn btn-lg btn-outline-primary">Submit</button>
@@ -21,7 +23,9 @@
     </div>
 </template>
 <script>
+import MEditor from './MEditor.vue';
 export default {
+  components: { MEditor },
     props:['questionId'],
     data(){
         return{
@@ -34,6 +38,9 @@ export default {
         },
         endpoint(){
             return `/questions/${this.questionId}/answers`;
+        },
+        uniqueName(){
+            return `question-${this.questionId}-answer`
         }
     },
     methods:{

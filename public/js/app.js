@@ -67306,6 +67306,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Answer_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Answer_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue__ = __webpack_require__(231);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_highlight__ = __webpack_require__(238);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //
@@ -67336,14 +67337,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['question'],
+    mixins: [__WEBPACK_IMPORTED_MODULE_2__mixins_highlight__["a" /* default */]],
     data: function data() {
         return {
             'question_id': this.question.id,
             'count': this.question.answers_count,
             'answers': [],
-            'nextUrl': null
+            'nextUrl': null,
+            'answerIds': []
         };
     },
 
@@ -67364,22 +67368,35 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         fetch: function fetch(endpoint) {
             var _this = this;
 
+            this.answerIds = [];
             axios.get(endpoint).then(function (_ref) {
                 var _answers;
 
                 var data = _ref.data;
 
+                _this.answerIds = data.data.map(function (a) {
+                    return a.id;
+                });
                 (_answers = _this.answers).push.apply(_answers, _toConsumableArray(data.data));
                 _this.nextUrl = data.next_page_url;
-            }).catch(function (err) {});
+            }).catch(function (err) {}).then(function () {
+                _this.answerIds.forEach(function (id) {
+                    _this.highlight('answer-' + id);
+                });
+            });
         },
         remove: function remove(index) {
             this.answers.splice(index, 1);
             this.count--;
         },
-        created: function created(answer) {
+        add: function add(answer) {
+            var _this2 = this;
+
             this.answers.push(answer);
             this.count++;
+            this.$nextTick(function () {
+                _this2.highlight('answer-' + answer.id);
+            });
         }
     }
 });
@@ -67640,6 +67657,7 @@ var render = function() {
           [
             _c("div", {
               ref: "bodyHtml",
+              attrs: { id: _vm.uniqueName },
               domProps: { innerHTML: _vm._s(_vm.bodyHtml) }
             }),
             _vm._v(" "),
@@ -67758,6 +67776,10 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MEditor_vue__ = __webpack_require__(137);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MEditor_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__MEditor_vue__);
+//
+//
 //
 //
 //
@@ -67781,7 +67803,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+    components: { MEditor: __WEBPACK_IMPORTED_MODULE_0__MEditor_vue___default.a },
     props: ['questionId'],
     data: function data() {
         return {
@@ -67795,6 +67819,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         endpoint: function endpoint() {
             return '/questions/' + this.questionId + '/answers';
+        },
+        uniqueName: function uniqueName() {
+            return 'question-' + this.questionId + '-answer';
         }
     },
     methods: {
@@ -67854,29 +67881,40 @@ var render = function() {
               }
             },
             [
-              _c("div", { staticClass: "form-group" }, [
-                _c("textarea", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.body,
-                      expression: "body"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { rows: "7", name: "body", required: "" },
-                  domProps: { value: _vm.body },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.body = $event.target.value
-                    }
-                  }
-                })
-              ]),
+              _c(
+                "div",
+                { staticClass: "form-group" },
+                [
+                  _c(
+                    "m-editor",
+                    { attrs: { body: _vm.body, name: _vm.uniqueName } },
+                    [
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.body,
+                            expression: "body"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { rows: "7", name: "body", required: "" },
+                        domProps: { value: _vm.body },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.body = $event.target.value
+                          }
+                        }
+                      })
+                    ]
+                  )
+                ],
+                1
+              ),
               _vm._v(" "),
               _c("div", { staticClass: "form-group" }, [
                 _c(
@@ -67981,7 +68019,7 @@ var render = function() {
       _vm._v(" "),
       _c("new-answer", {
         attrs: { "question-id": _vm.question.id },
-        on: { created: _vm.created }
+        on: { created: _vm.add }
       })
     ],
     1
@@ -68045,7 +68083,15 @@ if (false) {
 /* harmony default export */ __webpack_exports__["a"] = ({
     methods: {
         highlight: function highlight() {
-            var el = this.$refs.bodyHtml;
+            var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+
+            var el = void 0;
+            if (!id) {
+                el = this.$refs.bodyHtml;
+            } else {
+                el = document.getElementById(id);
+            }
+
             if (el) __WEBPACK_IMPORTED_MODULE_0_prismjs___default.a.highlightAllUnder(el);
         }
     }
