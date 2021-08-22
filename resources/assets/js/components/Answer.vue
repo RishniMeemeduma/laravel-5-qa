@@ -3,18 +3,22 @@
        <vote :model="answer" name="answer"></vote>
         <div class="media-body">
 
-            <form  v-if="editing" @submit.prevent="update">
+            <form  v-show="editing" @submit.prevent="update">
 
-                <div class="form-group">
-                    <textarea name="" class="form-control" id="" cols="30" rows="10" v-model="body" ></textarea>
-                </div>
+                
+                    <div class="form-group">
+                        <m-editor :body="body" :name="uniqueName">
+                        <textarea name="" class="form-control" id="" cols="30" rows="10" v-model="body" ></textarea>
+                        </m-editor>
+                    </div>
+                
                 
                 <button class="btn  btn-primary" :disabled="inValid">Update</button>
                 <button class="btn  btn-outline-secondary" @click ="cancel" type="button">cancel</button>
             </form>
 
-            <div v-else>
-                <div v-html="bodyHtml"></div>
+            <div v-show="!editing">
+                <div v-html="bodyHtml" ref="bodyHtml"></div>
                 <div class="row">
                     <div class="col-4">
                         <div class="ml-auto">
@@ -36,18 +40,14 @@
 </template>
 
 <script>
-import UserInfo from './UserInfo.vue';
-import Vote from './Vote.vue';
+
 import modification from '../mixins/modifications';
 
     
 export default {
     props:['answer'],
     mixins:[modification],
-    components:{
-        UserInfo,
-        Vote
-    },
+
     data(){
         return {
             editing : false,
@@ -65,6 +65,9 @@ export default {
         },
         endpoint(){
             return `/questions/${this.question_id}/answers/${this.id}`;
+        },
+        uniqueName(){
+            return `answer-${this.id}`;
         }
     },
     methods:{

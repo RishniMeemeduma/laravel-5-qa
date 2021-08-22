@@ -1,8 +1,19 @@
+import highlight from '../mixins/highlight';
+import UserInfo from '../components/UserInfo.vue';
+import Vote from '../components/Vote.vue';
+import MEditor from '../components/MEditor.vue';
+
 export default{
+    mixins:[highlight],
     data(){
         return{
             editing:false,
         }
+    },
+    components:{
+        UserInfo,
+        Vote,
+        MEditor
     },
     methods:{
         edit(){
@@ -39,6 +50,7 @@ export default{
                     dangerMode: true,
                 })
             })
+            .then(()=>this.highlight())
         },
 
         payload(){},
