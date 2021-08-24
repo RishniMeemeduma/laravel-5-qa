@@ -26,6 +26,7 @@
         "vue-izitoast": "^1.2.1"
     },
     "dependencies": {
+        "passport": "^0.4.1",
         "sweetalert": "^2.1.2",
         "sweetalert2": "^11.1.2"
     }
