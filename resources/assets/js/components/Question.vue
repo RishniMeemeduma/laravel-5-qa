@@ -28,7 +28,7 @@
                         <div class="d-flex align-items-center">
                             <h1>{{ title }}</h1>
                             <div class="ml-auto">
-                                <a href="/questions" class="btn btn-outline-secondary">Back to all Questions</a>
+                                <router-link :to="{name:'questions'}" class="btn btn-outline-secondary">Back to all Questions</router-link>
                             </div>
                         </div>                        
                     </div>
@@ -62,11 +62,20 @@
 <script>
 
 import modification from '../mixins/modifications';
+import EventBus from '../event-bus';
 
 
 export default {
     props:['question'],
     mixins:[modification],
+    components:{
+        EventBus
+    },
+    mounted(){
+        EventBus.$on('answers-count-changed',(count)=>{
+            this.question.answers_count = count
+        });
+    },
     
     data(){
         return{
@@ -113,6 +122,8 @@ export default {
                         // $(this.$el).fadeOut(500,()=>{
                         //     swal("Good job!", res.data.message, "success");
                         // })
+                        this.$toast.success(data.message, "Success", { timeout: 2000 });
+                        this.$router.push({ name: 'questions' });
                         
                         
                     })

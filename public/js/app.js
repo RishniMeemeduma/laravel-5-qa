@@ -70038,7 +70038,8 @@ var routes = [{
 }, {
     path: '/questions/:slug',
     component: __WEBPACK_IMPORTED_MODULE_1__pages_QuestionPage___default.a,
-    name: 'questions.show'
+    name: 'questions.show',
+    props: true
 }, {
     path: '/questions/:id/edit',
     component: __WEBPACK_IMPORTED_MODULE_5__pages_EditQuestions___default.a,
@@ -70343,6 +70344,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -70413,11 +70416,25 @@ var render = function() {
     _vm._v(" "),
     _c("div", { staticClass: "media-body" }, [
       _c("div", { staticClass: "d-flex align-items-center" }, [
-        _c("h3", { staticClass: "mt-0" }, [
-          _c("a", { attrs: { href: "#" } }, [
-            _vm._v(_vm._s(_vm.question.title))
-          ])
-        ]),
+        _c(
+          "h3",
+          { staticClass: "mt-0" },
+          [
+            _c(
+              "router-link",
+              {
+                attrs: {
+                  to: {
+                    name: "questions.show",
+                    params: { slug: _vm.question.slug }
+                  }
+                }
+              },
+              [_vm._v(_vm._s(_vm.question.title))]
+            )
+          ],
+          1
+        ),
         _vm._v(" "),
         _c(
           "div",
@@ -70770,11 +70787,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['question'],
+    props: ['slug'],
     components: {
         Question: __WEBPACK_IMPORTED_MODULE_0__components_Question_vue___default.a,
         Answers: __WEBPACK_IMPORTED_MODULE_1__components_Answers_vue___default.a
+    },
+    data: function data() {
+        return {
+            question: {}
+        };
+    },
+    mounted: function mounted() {
+        this.fetchQuestions();
+    },
+
+    methods: {
+        fetchQuestions: function fetchQuestions() {
+            var _this = this;
+
+            axios.get('/question/' + this.slug).then(function (_ref) {
+                var data = _ref.data;
+
+                _this.question = data.data;
+            });
+        }
     }
+
 });
 
 /***/ }),
@@ -70831,6 +70869,7 @@ module.exports = Component.exports
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_modifications__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__event_bus__ = __webpack_require__(27);
 //
 //
 //
@@ -70892,6 +70931,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -70899,7 +70939,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['question'],
     mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_modifications__["a" /* default */]],
+    components: {
+        EventBus: __WEBPACK_IMPORTED_MODULE_1__event_bus__["a" /* default */]
+    },
+    mounted: function mounted() {
+        var _this = this;
 
+        __WEBPACK_IMPORTED_MODULE_1__event_bus__["a" /* default */].$on('answers-count-changed', function (count) {
+            _this.question.answers_count = count;
+        });
+    },
     data: function data() {
         return {
             title: this.question.title,
@@ -70939,14 +70988,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             };
         },
         delete: function _delete() {
-            var _this = this;
+            var _this2 = this;
 
             axios.delete(this.endpoint).then(function (res) {
-                _this.$emit('deleted');
+                _this2.$emit('deleted');
                 // $(this.$el).fadeOut(500,()=>{
                 //     swal("Good job!", res.data.message, "success");
                 // })
-
+                _this2.$toast.success(data.message, "Success", { timeout: 2000 });
+                _this2.$router.push({ name: 'questions' });
             }).catch(function (err) {});
             setTimeout(function () {
                 window.location.href = "/questions";
@@ -80064,7 +80114,21 @@ var render = function() {
               _c("div", { staticClass: "d-flex align-items-center" }, [
                 _c("h1", [_vm._v(_vm._s(_vm.title))]),
                 _vm._v(" "),
-                _vm._m(0)
+                _c(
+                  "div",
+                  { staticClass: "ml-auto" },
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        staticClass: "btn btn-outline-secondary",
+                        attrs: { to: { name: "questions" } }
+                      },
+                      [_vm._v("Back to all Questions")]
+                    )
+                  ],
+                  1
+                )
               ])
             ]),
             _vm._v(" "),
@@ -80139,23 +80203,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "ml-auto" }, [
-      _c(
-        "a",
-        {
-          staticClass: "btn btn-outline-secondary",
-          attrs: { href: "/questions" }
-        },
-        [_vm._v("Back to all Questions")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -80223,6 +80271,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue__ = __webpack_require__(244);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_highlight__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__event_bus__ = __webpack_require__(27);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //
@@ -80263,17 +80312,27 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             'count': this.question.answers_count,
             'answers': [],
             'nextUrl': null,
-            'answerIds': []
+            'answerIds': [],
+            excludeAnswers: []
         };
     },
 
     components: {
         Answer: __WEBPACK_IMPORTED_MODULE_0__Answer_vue___default.a,
-        NewAnswer: __WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue___default.a
+        NewAnswer: __WEBPACK_IMPORTED_MODULE_1__NewAnswer_vue___default.a,
+        EventBus: __WEBPACK_IMPORTED_MODULE_3__event_bus__["a" /* default */]
     },
     computed: {
         title: function title() {
             return this.count + " " + (this.count > 1 ? 'Answers' : 'Answer');
+        },
+        theNextUrl: function theNextUrl() {
+            if (this.nextUrl && this.excludeAnswers.length > 0) {
+                return this.nextUrl + this.excludeAnswers.map(function (a) {
+                    return "&excludes[]=" + a.id;
+                }).join('');
+            }
+            return this.nextUrl;
         }
     },
     created: function created() {
@@ -80290,6 +80349,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
                 var data = _ref.data;
 
+                console.log(data);
                 _this.answerIds = data.data.map(function (a) {
                     return a.id;
                 });
@@ -80304,6 +80364,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         remove: function remove(index) {
             this.answers.splice(index, 1);
             this.count--;
+            if (this.count === 0) __WEBPACK_IMPORTED_MODULE_3__event_bus__["a" /* default */].$emit('answers-count-changed', this.count);
         },
         add: function add(answer) {
             var _this2 = this;
@@ -80313,6 +80374,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.$nextTick(function () {
                 _this2.highlight('answer-' + answer.id);
             });
+            if (this.count === 1) __WEBPACK_IMPORTED_MODULE_3__event_bus__["a" /* default */].$emit('answers-count-changed', this.count);
+            this.excludeAnswers.push(answer);
         }
     }
 });
@@ -80906,14 +80969,14 @@ var render = function() {
                     }),
                     _vm._v(" "),
                     _c("div", { staticClass: "text-center mt-3" }, [
-                      _vm.nextUrl
+                      _vm.theNextUrl
                         ? _c(
                             "button",
                             {
                               staticClass: "btn btn-outline-secondary",
                               on: {
                                 click: function($event) {
-                                  _vm.fetch(_vm.nextUrl)
+                                  _vm.fetch(_vm.theNextUrl)
                                 }
                               }
                             },
@@ -80959,16 +81022,18 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "container" },
-    [
-      _c("question", { attrs: { question: _vm.question } }),
-      _vm._v(" "),
-      _c("answers", { attrs: { question: _vm.question } })
-    ],
-    1
-  )
+  return _vm.question.id
+    ? _c(
+        "div",
+        { staticClass: "container" },
+        [
+          _c("question", { attrs: { question: _vm.question } }),
+          _vm._v(" "),
+          _c("answers", { attrs: { question: _vm.question } })
+        ],
+        1
+      )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -81606,7 +81671,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return user.id == model.user.id;
     },
     accept: function accept(user, answer) {
-        return user.id == answer.question.user.id;
+        return user.id == answer.question_user_id;
     },
     deleteQuestion: function deleteQuestion(user, question) {
         return user.id == question.user.id && question.answers_count < 1;
