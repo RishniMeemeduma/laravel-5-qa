@@ -1,10 +1,11 @@
 import highlight from '../mixins/highlight';
+import destroy from '../mixins/destroy';
 import UserInfo from '../components/UserInfo.vue';
 import Vote from '../components/Vote.vue';
 import MEditor from '../components/MEditor.vue';
 
 export default{
-    mixins:[highlight],
+    mixins:[highlight,destroy],
     data(){
         return{
             editing:false,

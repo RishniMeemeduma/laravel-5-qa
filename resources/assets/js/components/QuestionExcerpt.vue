@@ -16,10 +16,7 @@
             <h3 class="mt-0"><a href="#">{{ question.title }}</a></h3>
             <div class="ml-auto">
                     <router-link :to="{name:'question.edit', params:{id:question.id}}" v-if="authorize('modify',question)" class="btn btn-sm btn-outline-secondary">Edit</router-link>
-                    <form class="form-delete" method="post" action="#" v-if="authorize('deleteQuestion',question)">
-                        
-                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                    </form>
+                    <button type="button"  v-if="authorize('deleteQuestion',question)" class="btn btn-sm btn-outline-danger" @click="destroy">Delete</button>
             </div>
         </div>
         <p class="lead">
@@ -32,8 +29,9 @@
 </div>
 </template>
 <script>
-
+import destroy from '../mixins/destroy';
 export default {
+    mixins:[destroy],
     props:['question'],
     computed:{
         statusClasses(){
@@ -46,7 +44,16 @@ export default {
     methods: {
         str_plural(str, count){
             return str + (count > 1 ?'s' :'');
-        }
+        },
+        delete(){
+           
+                axios.delete('/question/'+this.question.id)
+                .then(({data}) => {
+                    this.$toast.success(data.message,"Success");
+                    this.$emit('deleted');
+                })
+            }
+        
     }
 }
 </script>
