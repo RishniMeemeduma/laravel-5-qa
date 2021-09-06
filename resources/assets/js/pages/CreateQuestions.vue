@@ -37,7 +37,7 @@ export default {
                 this.$toast.success(data.message,"success");
             })
             .catch(({response})=>{
-                EventBus.$emit('error',response.data.errors)
+                EventBus.$emit('error' ,response.data.errors);
             })
         }
     }

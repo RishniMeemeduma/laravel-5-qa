@@ -21,6 +21,7 @@ import router from './router';
 Vue.use(VueIziToast);
 
 import Authorization from './authorization/authorize';
+import Spinner from './components/Spinner';
 
 Vue.use(Authorization);
 /**
@@ -29,11 +30,36 @@ Vue.use(Authorization);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+Vue.component('spinner',Spinner);
 
-Vue.component('question-page',require('./pages/QuestionPage.vue'));
+
 
 const app = new Vue({
     el: '#app',
     router,
+    data:{
+        loading:false
+    },
+    created(){
+        // Add a request interceptor
+        axios.interceptors.request.use((config) => {
+
+            this.loading = true;
+            return config;
+            
+        }, (error) => {
+            this.loading = false;
+            return Promise.reject(error);
+        });
+
+        // Add a response interceptor
+        axios.interceptors.response.use((response) => {
+            this.loading = false;
+            return response;
+        }, (error)  => {
+            this.loading = false;
+            return Promise.reject(error);
+        })
+    },
     linkActiveClass:'active'
 });

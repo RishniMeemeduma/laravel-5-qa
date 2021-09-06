@@ -1,7 +1,8 @@
 <template>
 <div>
   <div class="card-body">
-    <div v-if="questions.length">
+    <spinner v-if="$root.loading"></spinner>
+    <div v-else-if="questions.length">
       <question-excerpt
         v-for="(question,index) in questions"
         v-bind:question="question"
@@ -23,17 +24,18 @@
 <script>
 import QuestionExcerpt from '../components/QuestionExcerpt.vue';
 import Pagination from "../Pagination.vue";
+
 export default {
 
     components:{
         QuestionExcerpt,
-        Pagination
+        Pagination,
     },
     data(){
         return {
             questions:[],
             meta:{},
-            links:{}
+            links:{},
         }
     },
     watch:{
@@ -41,6 +43,7 @@ export default {
     },
     mounted(){
         this.fetchQuestions()
+        
     },
     methods:{
         fetchQuestions(){

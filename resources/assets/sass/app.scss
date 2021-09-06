@@ -118,3 +118,12 @@ form.form-delete {
 .swal-footer {
   text-align: center;
 }
+.fade-enter-active,
+.fade-leave-active{
+  transition: opacity .3s linear;
+
+}
+.fade-enter,
+.fade-leave-to{
+  opacity: 0;
+}
