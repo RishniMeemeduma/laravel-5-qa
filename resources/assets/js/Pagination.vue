@@ -26,7 +26,9 @@ export default {
     },
     computed:{
         pagesInfo(){
-            return `pages ${this.meta.current_page} of ${this.meta.last_page}`;
+            let current_page = this.meta.current_pag || 1;
+            let last_page = this.meta.last_page || 1;
+            return `pages ${current_page} of ${last_page}`;
         },
         isFirst(){ return this.meta.current_page == 1},
         isLast(){ return this.meta.current_page == this.meta.last_page }

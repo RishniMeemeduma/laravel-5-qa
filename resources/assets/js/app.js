@@ -22,6 +22,7 @@ Vue.use(VueIziToast);
 
 import Authorization from './authorization/authorize';
 import Spinner from './components/Spinner';
+import axios from 'axios';
 
 Vue.use(Authorization);
 /**
@@ -38,10 +39,15 @@ const app = new Vue({
     el: '#app',
     router,
     data:{
-        loading:false
+        loading:false,
+        interceptor:null
     },
     created(){
-        // Add a request interceptor
+       this.enableInterceptor()
+    },
+    methods:{
+        enableInterceptor(){
+             // Add a request interceptor
         axios.interceptors.request.use((config) => {
 
             this.loading = true;
@@ -60,6 +66,11 @@ const app = new Vue({
             this.loading = false;
             return Promise.reject(error);
         })
+        },
+        disableInterceptor(){
+            axios.interceptors.request.eject(this.interceptor)
+        },
     },
+    
     linkActiveClass:'active'
 });

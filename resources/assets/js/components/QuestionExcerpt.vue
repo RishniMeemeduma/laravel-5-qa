@@ -32,9 +32,14 @@
 </template>
 <script>
 import destroy from '../mixins/destroy';
+import EventBus from '../event-bus';
+
 export default {
     mixins:[destroy],
     props:['question'],
+    components:{
+        EventBus
+    },
     computed:{
         statusClasses(){
             return [
@@ -48,11 +53,14 @@ export default {
             return str + (count > 1 ?'s' :'');
         },
         delete(){
-           
+                this.$root.disableInterceptor();
                 axios.delete('/question/'+this.question.id)
                 .then(({data}) => {
+
                     this.$toast.success(data.message,"Success");
-                    this.$emit('deleted');
+                    EventBus.$emit('deleted',this.question.id);
+
+                    this.$root.enableInterceptor();
                 })
             }
         

@@ -4,10 +4,9 @@
     <spinner v-if="$root.loading"></spinner>
     <div v-else-if="questions.length">
       <question-excerpt
-        v-for="(question,index) in questions"
+        v-for="question in questions"
         v-bind:question="question"
         :key="question.id"
-        @deleted="remove(index)"
       ></question-excerpt>
     </div>
     <div class="alert alert-warning" v-else>
@@ -24,12 +23,14 @@
 <script>
 import QuestionExcerpt from '../components/QuestionExcerpt.vue';
 import Pagination from "../Pagination.vue";
+import EventBus from "../event-bus";
 
 export default {
 
     components:{
         QuestionExcerpt,
         Pagination,
+        EventBus
     },
     data(){
         return {
@@ -42,7 +43,11 @@ export default {
         '$route':'fetchQuestions'
     },
     mounted(){
-        this.fetchQuestions()
+        this.fetchQuestions(),
+        EventBus.$on('deleted',(id) => {
+          let index = this.questions.findIndex(question => id === question.id)  
+            this.remove(index)
+        })
         
     },
     methods:{

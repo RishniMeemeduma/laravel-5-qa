@@ -34646,6 +34646,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__authorization_authorize__ = __webpack_require__(268);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_Spinner__ = __webpack_require__(270);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_Spinner___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_Spinner__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_axios__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_axios__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -34670,6 +34672,7 @@ __WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_
 
 
 
+
 __WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_5__authorization_authorize__["a" /* default */]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -34683,29 +34686,39 @@ var app = new __WEBPACK_IMPORTED_MODULE_3_vue___default.a({
     el: '#app',
     router: __WEBPACK_IMPORTED_MODULE_4__router__["a" /* default */],
     data: {
-        loading: false
+        loading: false,
+        interceptor: null
     },
     created: function created() {
-        var _this = this;
+        this.enableInterceptor();
+    },
 
-        // Add a request interceptor
-        axios.interceptors.request.use(function (config) {
+    methods: {
+        enableInterceptor: function enableInterceptor() {
+            var _this = this;
 
-            _this.loading = true;
-            return config;
-        }, function (error) {
-            _this.loading = false;
-            return Promise.reject(error);
-        });
+            // Add a request interceptor
+            __WEBPACK_IMPORTED_MODULE_7_axios___default.a.interceptors.request.use(function (config) {
 
-        // Add a response interceptor
-        axios.interceptors.response.use(function (response) {
-            _this.loading = false;
-            return response;
-        }, function (error) {
-            _this.loading = false;
-            return Promise.reject(error);
-        });
+                _this.loading = true;
+                return config;
+            }, function (error) {
+                _this.loading = false;
+                return Promise.reject(error);
+            });
+
+            // Add a response interceptor
+            __WEBPACK_IMPORTED_MODULE_7_axios___default.a.interceptors.response.use(function (response) {
+                _this.loading = false;
+                return response;
+            }, function (error) {
+                _this.loading = false;
+                return Promise.reject(error);
+            });
+        },
+        disableInterceptor: function disableInterceptor() {
+            __WEBPACK_IMPORTED_MODULE_7_axios___default.a.interceptors.request.eject(this.interceptor);
+        }
     },
 
     linkActiveClass: 'active'
@@ -70487,6 +70500,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_QuestionExcerpt_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_QuestionExcerpt_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Pagination_vue__ = __webpack_require__(133);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Pagination_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Pagination_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__event_bus__ = __webpack_require__(6);
 //
 //
 //
@@ -70509,7 +70523,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
+
 
 
 
@@ -70518,7 +70532,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     components: {
         QuestionExcerpt: __WEBPACK_IMPORTED_MODULE_0__components_QuestionExcerpt_vue___default.a,
-        Pagination: __WEBPACK_IMPORTED_MODULE_1__Pagination_vue___default.a
+        Pagination: __WEBPACK_IMPORTED_MODULE_1__Pagination_vue___default.a,
+        EventBus: __WEBPACK_IMPORTED_MODULE_2__event_bus__["a" /* default */]
     },
     data: function data() {
         return {
@@ -70532,19 +70547,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         '$route': 'fetchQuestions'
     },
     mounted: function mounted() {
-        this.fetchQuestions();
+        var _this = this;
+
+        this.fetchQuestions(), __WEBPACK_IMPORTED_MODULE_2__event_bus__["a" /* default */].$on('deleted', function (id) {
+            var index = _this.questions.findIndex(function (question) {
+                return id === question.id;
+            });
+            _this.remove(index);
+        });
     },
 
     methods: {
         fetchQuestions: function fetchQuestions() {
-            var _this = this;
+            var _this2 = this;
 
             axios.get('/questions', { params: this.$route.query }).then(function (_ref) {
                 var data = _ref.data;
 
-                _this.questions = data.data;
-                _this.meta = data.meta;
-                _this.links = data.link;
+                _this2.questions = data.data;
+                _this2.meta = data.meta;
+                _this2.links = data.link;
             });
         },
         remove: function remove(index) {
@@ -70607,6 +70629,7 @@ module.exports = Component.exports
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_destroy__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__event_bus__ = __webpack_require__(6);
 //
 //
 //
@@ -70639,11 +70662,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_destroy__["a" /* default */]],
     props: ['question'],
+    components: {
+        EventBus: __WEBPACK_IMPORTED_MODULE_1__event_bus__["a" /* default */]
+    },
     computed: {
         statusClasses: function statusClasses() {
             return ['status', this.question.status];
@@ -70656,11 +70684,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         delete: function _delete() {
             var _this = this;
 
+            this.$root.disableInterceptor();
             axios.delete('/question/' + this.question.id).then(function (_ref) {
                 var data = _ref.data;
 
+
                 _this.$toast.success(data.message, "Success");
-                _this.$emit('deleted');
+                __WEBPACK_IMPORTED_MODULE_1__event_bus__["a" /* default */].$emit('deleted', _this.question.id);
+
+                _this.$root.enableInterceptor();
             });
         }
     }
@@ -70874,7 +70906,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     computed: {
         pagesInfo: function pagesInfo() {
-            return 'pages ' + this.meta.current_page + ' of ' + this.meta.last_page;
+            var current_page = this.meta.current_pag || 1;
+            var last_page = this.meta.last_page || 1;
+            return 'pages ' + current_page + ' of ' + last_page;
         },
         isFirst: function isFirst() {
             return this.meta.current_page == 1;
@@ -70973,15 +71007,10 @@ var render = function() {
           : _vm.questions.length
             ? _c(
                 "div",
-                _vm._l(_vm.questions, function(question, index) {
+                _vm._l(_vm.questions, function(question) {
                   return _c("question-excerpt", {
                     key: question.id,
-                    attrs: { question: question },
-                    on: {
-                      deleted: function($event) {
-                        _vm.remove(index)
-                      }
-                    }
+                    attrs: { question: question }
                   })
                 })
               )
