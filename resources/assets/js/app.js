@@ -16,10 +16,13 @@ window.Swal = swal;
 import VueIziToast from 'vue-izitoast';
  import 'izitoast/dist/css/iziToast.min.css';
 import Vue from 'vue';
+import router from './router';
  
 Vue.use(VueIziToast);
 
 import Authorization from './authorization/authorize';
+import Spinner from './components/Spinner';
+import axios from 'axios';
 
 Vue.use(Authorization);
 /**
@@ -28,10 +31,46 @@ Vue.use(Authorization);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('user-info', require('./components/UserInfo.vue'));
-Vue.component('vote',require('./components/Vote.vue'));
-Vue.component('answers', require('./components/Answers.vue'));
+Vue.component('spinner',Spinner);
+
+
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    router,
+    data:{
+        loading:false,
+        interceptor:null
+    },
+    created(){
+       this.enableInterceptor()
+    },
+    methods:{
+        enableInterceptor(){
+             // Add a request interceptor
+        axios.interceptors.request.use((config) => {
+
+            this.loading = true;
+            return config;
+            
+        }, (error) => {
+            this.loading = false;
+            return Promise.reject(error);
+        });
+
+        // Add a response interceptor
+        axios.interceptors.response.use((response) => {
+            this.loading = false;
+            return response;
+        }, (error)  => {
+            this.loading = false;
+            return Promise.reject(error);
+        })
+        },
+        disableInterceptor(){
+            axios.interceptors.request.eject(this.interceptor)
+        },
+    },
+    
+    linkActiveClass:'active'
 });

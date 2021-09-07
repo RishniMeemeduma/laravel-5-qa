@@ -3,18 +3,22 @@
        <vote :model="answer" name="answer"></vote>
         <div class="media-body">
 
-            <form  v-if="editing" @submit.prevent="update">
+            <form  v-show="editing" @submit.prevent="update">
 
-                <div class="form-group">
-                    <textarea name="" class="form-control" id="" cols="30" rows="10" v-model="body" ></textarea>
-                </div>
+                
+                    <div class="form-group">
+                        <m-editor :body="body" :name="uniqueName">
+                        <textarea name="" class="form-control" id="" cols="30" rows="10" v-model="body" ></textarea>
+                        </m-editor>
+                    </div>
+                
                 
                 <button class="btn  btn-primary" :disabled="inValid">Update</button>
                 <button class="btn  btn-outline-secondary" @click ="cancel" type="button">cancel</button>
             </form>
 
-            <div v-else>
-                <div v-html="bodyHtml"></div>
+            <div v-show="!editing">
+                <div v-html="bodyHtml" ref="bodyHtml" :id="uniqueName"></div>
                 <div class="row">
                     <div class="col-4">
                         <div class="ml-auto">
@@ -36,8 +40,14 @@
 </template>
 
 <script>
+
+import modification from '../mixins/modifications';
+
+    
 export default {
     props:['answer'],
+    mixins:[modification],
+
     data(){
         return {
             editing : false,
@@ -55,45 +65,28 @@ export default {
         },
         endpoint(){
             return `/questions/${this.question_id}/answers/${this.id}`;
+        },
+        uniqueName(){
+            return `answer-${this.id}`;
         }
     },
     methods:{
-        update() {
-            axios.patch(this.endpoint,{
+        payload(){
+            return {
                 body:this.body
-            })
-            .then(res=>{
-                this.editing= false;
-                this.bodyHtml = res.data.body_html;
-                // this.$toast.success(res.data.message,"Success",{timeout:3000});
-                swal('Updated !!',res.data.message, "success")
-            })
-            .catch(error=>{
-                this.$toast.error(res.response.data.message,"Error",{timeout:3000})
-            });
+            }
         },
 
-        edit(){
+        setEditCache(){
             this.beforeEditCache = this.body;
-            this.editing = true;
         },
 
-        cancel(){
+        restoreFromCache(){
             this.body = this.beforeEditCache;
-            this.editing = false;
         },
 
-        destroy(){
-            swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this imaginary file!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willdelete) =>{
-                if(willdelete){
-                    axios.delete(this.endpoint)
+        delete(){
+            axios.delete(this.endpoint)
                     .then(res=>{
                         this.$emit('deleted');
                         // $(this.$el).fadeOut(500,()=>{
@@ -102,8 +95,6 @@ export default {
                         
                     })
                     .catch(err=>{})
-                }
-            });
         }
 
     }
